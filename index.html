@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Ultimate Meme Generator</title>
+
+    <link rel="stylesheet" href="style/style.css">
+    <script src="https://kit.fontawesome.com/a190ef2d05.js" crossorigin="anonymous"></script>
+</head>
+
+<body onload="onInit()">
+
+    <header class="main-header">
+        <!-- Master Meme -->
+        <!-- <div class="logo"><img src="img/logo/logo meme.png" alt=""></div> -->
+        <div class="logo">Master Meme</div>
+        <nav class="main-nav">
+            <ul class="main-nav-list clean-list flex">
+                <li><a href="#" onclick="onInitGallery()">Gallery</a></li>
+                <li><a href="#">Memes</a></li>
+                <li><a href="#">About</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section class="editor-section hide">
+        <div class="main-canvas">
+            <canvas width="400" height="400"></canvas>
+
+        </div>
+
+        <!-- <img src="img/meme-imgs (various aspect ratios)/2.jpg" alt=""> -->
+        <section class="editor-tools">
+
+            <!-- <label for="text"></label>
+            <input type="text" id="name" placeholder="Text Here" oninput="onInputText(this)">
+
+            <div class="">
+                <button class="switch-text"><i class="fa-solid fa-arrow-up"> <i
+                            class="fa-solid fa-arrow-down"></i></i></button>
+                <button class="add-text"><i class="fa-solid fa-plus"></i></button>
+                <button class="remove-text" onclick="onRemoveText(this)"><i class="fa-regular fa-trash-can"></i></button>
+            </div> -->
+
+            <!-- <div class="">
+                <button class="text-growth"><i class="fa-solid fa-font"></i><i
+                        class="fa-solid fa-plus"></i></i></button>
+                <button class="reduce-text"><i class="fa-solid fa-font"></i><i class="fa-solid fa-minus"></i></button>
+                <button class="ltr-text"><i class="fa-solid fa-align-left"></i></i></button>
+                <button class="center-text"><i class="fa-solid fa-align-center"></i></button>
+                <button class="rtl-text"><i class="fa-solid fa-align-right"></i></button>
+                <select name="font" id="">font</select>
+
+                <label for="text-color-border">
+                    <input type="color" id="text-color-border" name="text-color-border">
+                     <i class="fa-solid fa-brush"></i>
+                </label>
+
+                <label for="text-color">
+                    <input type="color" id="text-color" name="text-color">
+                    
+                </label>
+
+            </div> -->
+
+            <!-- <div class="">
+                <button class="save-meme-button"><i class="fa-solid fa-download"></i>Save</button>
+                <button class="share-meme-button"><i class="fa-solid fa-share"></i>Share</button>
+                <button class="download-meme-button"></i><i class="fa-solid fa-floppy-disk"></i>Download</button>
+            </div>  -->
+
+        </section>
+    </section>
+
+
+
+    <section class="gallery-section">
+        <main>
+            <section class="search-filter">
+                <div class="input-search"></div>
+                <div class="filter-by-word"></div>
+            </section>
+            <section>
+                
+                <div class="gallery-grid-container">
+                    <!-- <label for="upload">Upload</label>
+                    <input type="file" name="upload" id="upload"> -->
+                    <!-- <form onsubmit="saveImg(event)">
+
+                        <button>Save</button>
+                    </form> -->
+
+
+                </div>
+            </section>
+        </main>
+    </section>
+
+
+    <footer class="main-footer">
+        <small class="footer-rights">
+            @ all rightts reserved 2024
+        </small>
+        <!-- <ul class="footer-social flex clean-list">
+            <li><a href="">facebook</a></li>
+            <li><a href="">twitter</a></li>
+            <li><a href="">instagram</a></li>
+        </ul> -->
+    </footer>
+
+
+
+
+
+
+    <!-- Util & Storage -->
+    <script src="service/service-util/service.util.js"></script>
+    <script src="service/service-local-storage/service.local.storage.js"></script>
+
+    <!-- Service -->
+    <script src="service/main.js"></script>
+    <script src="service/service-meme/service.meme.editor.js"></script>
+
+    <!-- Controller -->
+    <script src="controller/controller.meme.editor.js"></script>
+    <script src="controller/controller.image.gallery.js"></script>
+</body>
+
+</html>

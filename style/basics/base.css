@@ -1,0 +1,17 @@
+* {
+	box-sizing: border-box;
+}
+
+body{
+    background-color: #31363F;
+    margin: 0;
+    
+}
+
+img {
+    cursor: pointer;
+    /* overflow-clip-margin: content-box; */
+    overflow: clip;
+}
+
+

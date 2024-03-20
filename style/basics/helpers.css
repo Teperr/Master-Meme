@@ -1,0 +1,28 @@
+.hide {
+    display: none;
+
+}
+
+.flex{
+    display: flex;
+}
+
+.align-center{
+    
+    align-items: center;
+}
+
+.justify-center{
+    justify-content: center;
+
+}
+
+.relative{
+    position: relative;
+}
+
+.clean-list {
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+}

@@ -1,0 +1,9 @@
+.editor-tools{
+    background-color: white;
+    /* flex-grow: 1; */
+    margin-inline-end: 6.25em;
+    min-width: 50%;
+    /* width: 50%; */
+    min-width: min-content;
+
+}

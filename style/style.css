@@ -1,0 +1,15 @@
+/* setup */
+@import url(setup/variables.css);
+@import url(setup/typography.css);
+
+/* basics */
+@import url(basics/base.css);
+@import url(basics/layout.css);
+@import url(basics/helpers.css);
+
+/* components */
+@import url(components/main-header.css);
+@import url(components/gallery/gallery-images.css);
+@import url(components/editor/editor-canvas.css);
+@import url(components/editor/editor-tools.css);
+@import url(components/main-footer.css);

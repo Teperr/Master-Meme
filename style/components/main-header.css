@@ -1,0 +1,23 @@
+.main-header {
+    background-color: #A8CD9F;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 6.25em;
+    
+    width: 80vw;
+    margin: 20px auto;
+    border-radius:20px ;
+}
+
+.main-header .logo {
+    margin-inline-start: 100px;
+
+}
+
+/* .main-header .main-nav ul > *:not(:last-child) */
+.main-header .main-nav ul > *{
+    margin-inline-end: 6.25em;
+    /* gap: 50px; */
+
+}
