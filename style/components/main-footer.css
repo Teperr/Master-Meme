@@ -1,0 +1,12 @@
+.main-footer {
+    /* flex-grow: 1; */
+    width: 80vw;
+    background-color: #fff;
+    margin: 20px auto;
+    border-radius: 20px;
+    /* margin-block-end: ; */
+    background-color: var(--header);
+    height: 4em;
+    /* flex-shrink: ; */
+    
+}

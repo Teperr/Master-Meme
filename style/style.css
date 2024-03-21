@@ -1,6 +1,7 @@
 /* setup */
 @import url(setup/variables.css);
 @import url(setup/typography.css);
+@import url(setup/mq.css);
 
 /* basics */
 @import url(basics/base.css);

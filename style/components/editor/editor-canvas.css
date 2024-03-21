@@ -1,9 +1,10 @@
 .main-canvas{
+    display: flex;
     min-width: 50%;
     /* max-width: 50%; */
     /* width: 50%; */
     /* flex-grow: 1; */
-    margin-inline-start: 6.25em;
+    /* margin-inline-start: 6.25em; */
     /* margin-inline-end: 6.25em; */
 
 }
@@ -15,4 +16,5 @@ canvas {
 	background-color: white;
 	border: 1px solid lightgray;
     margin: 0px;
+    border-radius: 10px;
 }

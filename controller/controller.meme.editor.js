@@ -5,10 +5,13 @@ var gCtx
 var gCurrLines
 
 var gQueryPreferences = {
-    memeIdx:0,
-    lineCount:1,
-    lineIdx:0,
-    currLineText:'',
+    memeIdx: 0,
+    lineCount: 1,
+    lineIdx: 0,
+    currNextLineIdx: 0,
+    currLineText: '',
+    currLineTextWidth: null,
+    linePlace: { x: null, y: null },
     fontSize: 20,
     txtAlign: null,
     txtFont: null,
@@ -20,79 +23,60 @@ function onInitCanva() {
     gElCanvas = document.querySelector('canvas')
     gCtx = gElCanvas.getContext('2d')
 
-    
-  
     renderMeme()
     renderHtmlButtons()
 
     window.addEventListener('resize', () => resizeCanvas())
+    console.log('gMemeAAAAAAAAAAAAAAAAAAAAAAAAAAA1111:', gMeme)
 }
 
-function onInputText(elInput){
-    console.log('elInput:', elInput)
-    var {selectedImgId, selectedLineIdx, lines} = gMeme
 
-    gQueryPreferences.currLineText = elInput.value
+function renderHtmlButtons() {
 
-    console.log('selectedImgId:', selectedImgId)
-
-    saveLine(elInput.value)
-    gMemes[selectedImgId].lines.txt = elInput.value
-    
-    gMeme = getMemeById(selectedImgId)
-    console.log('gMeme:', gMeme)
-    
-    setLineTxt(elInput.value)
-    console.log('gMeme:', gMeme)
-
-    renderMeme()
-
-}
-
-function renderHtmlButtons(){
-    // console.log('gMemeIdx:', gMemeIdx)
-    // var memeIdx = findMemeIdx()
-    // var memeIdx = findMemeIdx()
-    // console.log('memeIdx:', memeIdx)
-    // console.log('meme:', meme)
-    // console.log('memeIdx:', memeIdx)
-    // console.log('meme.selectedImgId:', meme[0].selectedImgId)
     const elEditorTools = document.querySelector('.editor-tools')
     console.log('gMemeIdx:', gMemeIdx)
 
     elEditorTools.innerHTML = `
     <label for="text"></label>
-    <input type="text" id="name" placeholder="Text Here" oninput="onInputText(this, ${gMemeIdx})">
+    <input class="text-input" type="text" id="name" placeholder="Text Here" oninput="onInputText(this, ${gMemeIdx})">
 
-    <div class="">
-        <button class="switch-text"><i class="fa-solid fa-arrow-up"> <i
+    <div class="main-button">
+        <button class="select-text" onClick="onSelectline(event)"><i class="fa-solid fa-arrow-up"> <i
                     class="fa-solid fa-arrow-down"></i></i></button>
         <button class="add-text" onclick="onAddLine(this, ${gMemeIdx})"><i class="fa-solid fa-plus"></i></button>
         <button class="remove-text" onclick="onRemoveText(this, ${gMemeIdx})"><i class="fa-regular fa-trash-can"></i></button>
     </div>
 
-    <div class="">
-        <button class="text-growth" onclick="onIncreaseText(this)"><i class="fa-solid fa-font"></i><i
-                class="fa-solid fa-plus"></i></i></button>
-        <button class="reduce-text" onclick="onDecreaseText(this)"><i class="fa-solid fa-font"></i><i class="fa-solid fa-minus"></i></button>
-        <button class="ltr-text"><i class="fa-solid fa-align-left"></i></i></button>
-        <button class="center-text"><i class="fa-solid fa-align-center"></i></button>
-        <button class="rtl-text"><i class="fa-solid fa-align-right"></i></button>
-        <select name="font" id="">font</select>
+    <div class="main-text-buttons">
+         <div class="main-text-buttons-top">
+            <button class="text-growth" onclick="onIncreaseText(this)"><i class="fa-solid fa-font"></i><i
+                    class="fa-solid fa-plus"></i></i></button>
+            <button class="reduce-text" onclick="onDecreaseText(this)"><i class="fa-solid fa-font"></i><i class="fa-solid fa-minus"></i></button>
+            <button class="ltr-text"><i class="fa-solid fa-align-left"></i></i></button>
+            <button class="center-text"><i class="fa-solid fa-align-center"></i></button>
+            <button class="rtl-text"><i class="fa-solid fa-align-right"></i></button>
+        
+        
+        </div>
 
-        <label for="text-color-border">
-            <input type="color" id="text-color-border" name="text-color-border" onchange="onBgColorPicker(this)">
-            <!-- <i class="fa-solid fa-brush"></i> -->
-        </label>
-
-        <label for="text-color">
-            <input type="color" id="text-color" name="text-color" onchange="onColorPicker(this)">
-            <!-- <i class="fa-solid fa-brush"></i> -->
-        </label>
+        <div class="main-text-buttons-down">
+        
+         <select name="font" id="">font</select>
+        
+            <label for="text-color-border">
+             <input type="color" class="text-bg-color-input" id="text-color-border" name="text-color-border" value="#46E5FB" onchange="onBgColorPicker(this)">
+             <!-- <i class="fa-solid fa-brush"></i> -->
+            </label>
+        
+            <label for="text-color">
+             <input type="color" class="text-color-input" id="text-color" name="text-color" value="#46E5FB" onchange="onColorPicker(this)">
+              <!-- <i class="fa-solid fa-brush"></i> -->
+          </label>
+        </div>
 
     </div>
 
-    <div class="">
+    <div class="button-footer">
         <button class="save-meme-button"><i class="fa-solid fa-download"></i>Save</button>
         <button class="share-meme-button"><i class="fa-solid fa-share"></i>Share</button>
         
@@ -100,7 +84,7 @@ function renderHtmlButtons(){
     </div>
     `
 
-    console.log('elEditorTools:',elEditorTools )
+    // console.log('elEditorTools:',elEditorTools )
     // <button class="download-meme-button" onclick="onDownLoadCanvas(this)"><a href="" download="file-name"></a><i class="fa-solid fa-floppy-disk"></i>Download</button>
 
 }
@@ -108,225 +92,184 @@ function renderHtmlButtons(){
 
 
 
-
-function saveLine(val){
-    saveToStorage('DB__CurrLine', val)
-    
-    
-}
-
-
-
-
-/// MAYBE NEW LINE FETUER
-function onSetLineTxt(el,idx = 0) {
-    
-    // setLineTxt(el.value,idx)
-
-    // document.querySelector('').value = el.value
-   
-    _onDrawText()
-
-}
-
-function _onDrawText() {
-    
-    var { selectedLineIdx, lines } = gMeme
-    console.log('lines:', lines)
-    
-
-    const text = lines[0].txt
-    
-
-    gCtx.fillStyle = lines[selectedLineIdx].color
-    gCtx.font = `${lines[selectedLineIdx].size}px Ariel`
-
-    gCtx.fillText(text, 50, 50)
-    gCtx.strokeText(text, 50, 50)
-
-    console.log('gCtx:', gCtx)
-    
-}
-
-
-
 function renderMeme() {
     if (!gMeme) return
-    // if (!gQueryPreferences.memeIdx)
-    // gQueryPreferences.memeIdx = getMemeIdx()
-    
-    var {selectedImgId, selectedLineIdx, lines} = gMeme
-    console.log('gMeme:', gMeme)
-    // console.log('selectedImgId:', selectedImgId)
-    // console.log('gImgIdx:', gImgIdx)
+    var { selectedImgId, selectedLineIdx, lines } = gMeme
 
     const img = new Image()
     img.src = `img/meme-imgs (square)/${selectedImgId}.jpg`
 
     img.onload = () => {
-        
-          gCtx.drawImage(img, 0, 0, gElCanvas.width, gElCanvas.height)
+        gCtx.drawImage(img, 0, 0, gElCanvas.width, gElCanvas.height)
+        renderLines()
+    }
+}
 
-        //   console.log('line:', line)
-        for(var i = 0; i < lines.length; i++){
-        
-            const text = lines[i].txt
-            gCtx.fillStyle = lines[i].color
-            gCtx.strokeStyle  = lines[i].bgColor
-            gCtx.font = `${lines[i].size}px Ariel`
-  
-           gCtx.fillText(text, 50, 50)
-           gCtx.strokeText(text, 50, 50)
-        }
-          
-        //   gMeme.lines.forEach(line => {
-           
-        //   })
-          
+
+function renderLines() {
+    // var widthLine = 50
+    // var heightLine = 50
+
+    console.log('gMeme:', gMeme)
+    var line = getLineById()
+    var meme = getMeme()
+    console.log('meme:', meme)
+    console.log('gMeme:', gMeme)
+    console.log('line:', line)
+    for (var i = 0; i < meme.lines.length; i++) {
+        var x = (!meme.lines.length) ? 50 : (50 * (i + 1))
+        var y = 50
+
+        const text = meme.lines[i].txt
+        console.log('meme.lines[i].color:', meme.lines[i].color)
+        gCtx.fillStyle = meme.lines[i].color // updat text color 
+        gCtx.strokeStyle = meme.lines[i].bgColor // update bg-color
+        gCtx.font = `${meme.lines[i].size}px Ariel` // update the font size and font style
+        gCtx.fillText(text, y, x) // print text on canvas
+        gCtx.strokeText(text, y, x) // render text
+
+        gQueryPreferences.linePlace.x = x
+        gQueryPreferences.linePlace.y = y
+
+        var elText = document.querySelector('.text-input').value = meme.lines[gQueryPreferences.lineIdx].txt
+
+        document.querySelector('.text-color-input').value = meme.lines[gQueryPreferences.lineIdx].color
+        document.querySelector('.text-bg-color-input').value = meme.lines[gQueryPreferences.lineIdx].bgColor
+
+        setLineTxt(elText, gQueryPreferences.lineIdx, gQueryPreferences.linePlace.x, gQueryPreferences.linePlace.y)
+
+
+        console.log('textaaaaaaaaaaasssssssssssssssssssss:', text)
+        var textWidth = gCtx.measureText(text).width;
+        console.log(textWidth);
+
+        gQueryPreferences.currLineTextWidth = textWidth
+        // _drawSquares(textWidth)
+
     }
 
-    // resizeCanvas()
-    // coverCanvasWithImg(elImg, selectedImgId)
+
+}
+
+
+function onSelectline(ev) {
+    const { lineIdx } = gQueryPreferences
+    getLineById(gQueryPreferences.lineIdx)
     
+    if (gQueryPreferences.lineIdx === gQueryPreferences.lineCount - 1) {
+        gQueryPreferences.lineIdx = 0
+    } else {
+        gQueryPreferences.lineIdx++
+    }
+
+    document.querySelector('.text-color-input').value = gMeme.lines[gQueryPreferences.lineIdx].color
+    document.querySelector('.text-bg-color-input').value = gMeme.lines[gQueryPreferences.lineIdx].bgColor
+
+    renderMeme()
+}
+
+function onInputText(elInput) {
+    gQueryPreferences.currLineText = elInput.value
+
+    saveLine(elInput.value, gQueryPreferences.lineIdx)
+    setLineTxt(elInput.value, gQueryPreferences.lineIdx, gQueryPreferences.linePlace.x, gQueryPreferences.linePlace.y)
+    renderMeme()
+}
+
+
+function _drawSquares(textWidth) {
+    gCtx.moveTo(gQueryPreferences.linePlace.x - 10, gQueryPreferences.linePlace.y * 1.5);
+    gCtx.lineTo(textWidth, gQueryPreferences.linePlace.y * 1.5);
+    gCtx.stroke();
+
+
 }
 
 function resizeCanvas() {
     const elCanvasContainer = document.querySelector('.main-canvas')
     gElCanvas.width = elCanvasContainer.clientWidth
 
-   
-}
-
-
-
-
-function onRemoveText(elText, memmIdx){
-    console.log('elText:', elText)
-    console.log('memmIdx:', memmIdx)
-    console.log('gMeme:', gMeme)
-    // gMeme.lines.txt = ''
-    removeText()
 
 }
 
-// var gQueryPreferences = {
-//     memeIdx:0,
-//     lineCount:0,
-//     lineIdx:1,
-//     currLineText:'',
-//     fontSize: 20,
-//     txtAlign: null,
-//     txtFont: null,
-//     txtColor: null,
-//     bgColor: null
-// }
 
-function onAddLine(el, idx){
+function onRemoveText(t,i) {
+    removeText(gQueryPreferences.lineIdx)
+    gQueryPreferences.lineIdx  -= 1
     
+    renderMeme()
+}
 
-    // var {txtLineCount} = gQueryPreferences
-    // var {txtLineCount} = gQueryPreferences
-    var {currLineText, fontSize, txtColor , bgColor} = gQueryPreferences
-   
+function onAddLine(el, idx) {
+    // const meme = getMeme()
+    // console.log('meme:', meme)
+    gQueryPreferences.lineIdx = gQueryPreferences.lineCount - 1
+    // console.log('gQueryPreferences.lineIdx:', gQueryPreferences.lineIdx)
+
+
+    var { lineIdx, currLineText, fontSize, txtColor, bgColor } = gQueryPreferences
+    // console.log('fontSizeWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW:', fontSize)
+
+
     gQueryPreferences.lineIdx++
     gQueryPreferences.lineCount++
-
-    console.log('el:', el)
-    console.log('idx:', idx)
-    console.log('gQueryPreferences:', gQueryPreferences)
+    // gQueryPreferences.currNextLineIdx = gQueryPreferences.lineIdx +1
 
 
-    addLine(idx,currLineText, 'New TEXT', fontSize, txtColor, bgColor)
-    renderMeme()
+    // gQueryPreferences.fontSize = gMeme.lines[idx].size
+    gQueryPreferences.linePlace.y += 20
 
-}
-
-
-function onIncreaseText(elIncreaseText){
-    var {fontSize} = gQueryPreferences
-    // fontSize++
-    gQueryPreferences.fontSize = ++fontSize 
-    
-    increaseText(fontSize)
+    addLine(idx, currLineText, 'New TEXT', fontSize, txtColor, bgColor, gQueryPreferences.linePlace.x, gQueryPreferences.linePlace.y)
     renderMeme()
 }
 
-function onDecreaseText(elIncreaseText){
-    var {fontSize} = gQueryPreferences
+function onIncreaseText(elIncreaseText) {
+    var { fontSize, lineIdx } = gQueryPreferences
+    gQueryPreferences.fontSize = ++fontSize
+
+    // gCtx.font = `${gQueryPreferences.fontSize}px Ariel`
+    const memeSize = getMeme()
+    gCtx.font = `${memeSize.lines[lineIdx].size}px Ariel`
+
+
+    increaseText(fontSize, lineIdx)
+    renderMeme()
+}
+
+function onDecreaseText(elIncreaseText) {
+    var { fontSize, lineIdx } = gQueryPreferences
     gQueryPreferences.fontSize = --fontSize
-   
-    decreaseText(fontSize)
+    console.log('gQueryPreferences.fontSize:', gQueryPreferences.fontSize)
+    
+    // gCtx.font = `${gQueryPreferences.fontSize}px Ariel`
+    const memeSize = getMeme()
+    gCtx.font = `${memeSize.lines[lineIdx].size}px Ariel`
+
+    decreaseText(gQueryPreferences.fontSize, lineIdx)
     renderMeme()
 }
 
-function onColorPicker(elColorText){
-    // console.log('elColorText:', elColorText)
-    // console.log('elColorText.value:', elColorText.value)
-    var {txtColor} = gQueryPreferences
+function onColorPicker(elColorText) {
+    var { txtColor, lineIdx } = gQueryPreferences
     txtColor = elColorText.value
-    console.log('gQueryPreferences:', gQueryPreferences)
 
-    colorPicker(txtColor)
-
+    colorPicker(txtColor, lineIdx)
     renderMeme()
-
-
 }
 
-
-function onBgColorPicker(elBgColorText){
-    var {bgColor} = gQueryPreferences
+function onBgColorPicker(elBgColorText) {
+    var { bgColor, lineIdx } = gQueryPreferences
     bgColor = elBgColorText.value
-    console.log('bgColor:', bgColor)
 
-    bgColorPicker(bgColor)
+    bgColorPicker(bgColor, lineIdx)
     renderMeme()
-
-
 }
 
-function onDownLoadCanvas(elBtn){
-
+function onDownLoadCanvas(elBtn) {
     const dataUrl = gElCanvas.toDataURL()
     elBtn.href = dataUrl
-
-
-
-
 }
 
-// function drawImg(textLine) {
-//     var meme = gMeme
-//         console.log('meme:', meme)
-    
-//         var {selectedImgId, selectedLineIdx, lines} = meme
-//         // lines[selectedLineIdx].txt = textLine
-        
-
-//     const img = new Image()
-//     img.src = `img/meme-imgs (square)/${gCurrImgIdx}.jpg`
-
-//     img.onload = () => {
-//         gCtx.drawImage(img, 0, 0, gElCanvas.width, gElCanvas.height)
-
-//         // console.log('lines:', lines)
-//         console.log('lines[selectedLineIdx]:', lines[selectedLineIdx])
-        
-        
-//         gCurrLines = lines[selectedLineIdx].txt
-//         console.log('gCurrLines:', gCurrLines)
-
-
-//         // onDrawText()
-//         // var {selectedImgId, selectedLineIdx, lines} = meme
-//         // const text = gCurrLines
-       
-
-//         gCtx.fillStyle = lines[selectedLineIdx].color
-//         gCtx.font = `${lines[selectedLineIdx].size}px Ariel`
-
-//         gCtx.fillText(gCurrLines, 50, 50)
-//         gCtx.strokeText(gCurrLines, 50, 50)
-//     }
-
-// }
+function saveLine(val) {
+    saveToStorage('DB__CurrLine', val)
+}
